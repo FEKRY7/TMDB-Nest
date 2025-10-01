@@ -1,85 +1,214 @@
-<p align="center">
-  <a href="http://nestjs.com/" target="blank"><img src="https://nestjs.com/img/logo-small.svg" width="120" alt="Nest Logo" /></a>
-</p>
+# 🎬 TMDB NestJS REST API
 
-[circleci-image]: https://img.shields.io/circleci/build/github/nestjs/nest/master?token=abc123def456
-[circleci-url]: https://circleci.com/gh/nestjs/nest
+> A complete end-to-end RESTful backend built with **NestJS**, **TypeORM**, and **PostgreSQL**, designed to sync movie data from [TMDB](https://www.themoviedb.org/) and provide features like listing, filtering, rating, watchlists, caching, and authentication.  
+>
+> 🧑‍💻 **GitHub:** [FEKRY7/TMDB-Nest](https://github.com/FEKRY7/TMDB-Nest)  
+> 🐳 **Docker Hub:** [fekry77/tmdb-nest](https://hub.docker.com/r/fekry77/tmdb-nest)
 
-  <p align="center">A progressive <a href="http://nodejs.org" target="_blank">Node.js</a> framework for building efficient and scalable server-side applications.</p>
-    <p align="center">
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/v/@nestjs/core.svg" alt="NPM Version" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/l/@nestjs/core.svg" alt="Package License" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/dm/@nestjs/common.svg" alt="NPM Downloads" /></a>
-<a href="https://circleci.com/gh/nestjs/nest" target="_blank"><img src="https://img.shields.io/circleci/build/github/nestjs/nest/master" alt="CircleCI" /></a>
-<a href="https://coveralls.io/github/nestjs/nest?branch=master" target="_blank"><img src="https://coveralls.io/repos/github/nestjs/nest/badge.svg?branch=master#9" alt="Coverage" /></a>
-<a href="https://discord.gg/G7Qnnhy" target="_blank"><img src="https://img.shields.io/badge/discord-online-brightgreen.svg" alt="Discord"/></a>
-<a href="https://opencollective.com/nest#backer" target="_blank"><img src="https://opencollective.com/nest/backers/badge.svg" alt="Backers on Open Collective" /></a>
-<a href="https://opencollective.com/nest#sponsor" target="_blank"><img src="https://opencollective.com/nest/sponsors/badge.svg" alt="Sponsors on Open Collective" /></a>
-  <a href="https://paypal.me/kamilmysliwiec" target="_blank"><img src="https://img.shields.io/badge/Donate-PayPal-ff3f59.svg" alt="Donate us"/></a>
-    <a href="https://opencollective.com/nest#sponsor"  target="_blank"><img src="https://img.shields.io/badge/Support%20us-Open%20Collective-41B883.svg" alt="Support us"></a>
-  <a href="https://twitter.com/nestframework" target="_blank"><img src="https://img.shields.io/twitter/follow/nestframework.svg?style=social&label=Follow" alt="Follow us on Twitter"></a>
-</p>
-  <!--[![Backers on Open Collective](https://opencollective.com/nest/backers/badge.svg)](https://opencollective.com/nest#backer)
-  [![Sponsors on Open Collective](https://opencollective.com/nest/sponsors/badge.svg)](https://opencollective.com/nest#sponsor)-->
+---
 
-## Description
+## 📌 Table of Contents
+- [Overview](#-overview)
+- [Architecture](#-architecture)
+- [Tech Stack](#-tech-stack)
+- [Environment Variables](#-environment-variables)
+- [Running the App](#-running-the-app)
+- [API Endpoints](#-api-endpoints)
+- [Database Schema](#-database-schema)
+- [Caching](#-caching)
+- [Authentication & Security](#-authentication--security)
+- [Testing](#-testing)
+- [Production Notes](#-production-notes)
+- [Project Links](#-project-links)
 
-[Nest](https://github.com/nestjs/nest) framework TypeScript starter repository.
+---
 
-## Project setup
+## 🌟 Overview
 
-```bash
-$ npm install
-```
+This project is a **CRUD application** that consumes TMDB APIs and keeps data synced in a local database. It exposes REST endpoints for:
 
-## Compile and run the project
+- Listing, searching, filtering, and paginating movies.
+- Allowing users to **rate movies** and showing average ratings.
+- **Adding movies to watchlists** or favorites.
+- Syncing data from TMDB into a scalable local database.
+- Caching frequently accessed data to reduce DB and TMDB calls.
+- User authentication & role-based authorization.
 
-```bash
-# development
-$ npm run start
+The app runs in **Docker containers** (NodeJS, PostgreSQL, Nginx) and is ready for production use.
 
-# watch mode
-$ npm run start:dev
+---
 
-# production mode
-$ npm run start:prod
-```
+## 🏗 Architecture
 
-## Run tests
 
-```bash
-# unit tests
-$ npm run test
 
-# e2e tests
-$ npm run test:e2e
++-------------------+
+| NGINX (8080) |
++---------+---------+
+|
+v
++---------+---------+
+| NestJS API |
+| (Movies, Users, |
+| Ratings, TMDB) |
++---------+---------+
+|
+v
++---------+---------+
+| PostgreSQL DB |
++-------------------+
 
-# test coverage
-$ npm run test:cov
-```
 
-## Resources
+**Main Modules:**
+- **Movies** – CRUD, filtering, file uploads.
+- **TMDB** – Sync service to import data.
+- **Ratings** – User ratings + average aggregation.
+- **UserMovieList** – Favorites & Watchlist.
+- **Auth** – JWT-based authentication, roles.
+- **Cloudinary** – Media uploads for movie posters/backdrops.
+- **Cache** – In-memory caching layer with TTL.
 
-Check out a few resources that may come in handy when working with NestJS:
+---
 
-- Visit the [NestJS Documentation](https://docs.nestjs.com) to learn more about the framework.
-- For questions and support, please visit our [Discord channel](https://discord.gg/G7Qnnhy).
-- To dive deeper and get more hands-on experience, check out our official video [courses](https://courses.nestjs.com/).
-- Visualize your application graph and interact with the NestJS application in real-time using [NestJS Devtools](https://devtools.nestjs.com).
-- Need help with your project (part-time to full-time)? Check out our official [enterprise support](https://enterprise.nestjs.com).
-- To stay in the loop and get updates, follow us on [X](https://x.com/nestframework) and [LinkedIn](https://linkedin.com/company/nestjs).
-- Looking for a job, or have a job to offer? Check out our official [Jobs board](https://jobs.nestjs.com).
+## 🧰 Tech Stack
 
-## Support
+- **Backend Framework:** NestJS (Node.js + TypeScript)  
+- **Database:** PostgreSQL + TypeORM  
+- **Caching:** NestJS CacheModule (TTL 1h)  
+- **Auth:** JWT, role-based guards  
+- **File Storage:** Cloudinary  
+- **Testing:** Jest (Unit tests ≥ 85%)  
+- **Deployment:** Docker + docker-compose + Nginx reverse proxy
 
-Nest is an MIT-licensed open source project. It can grow thanks to the sponsors and support by the amazing backers. If you'd like to join them, please [read more here](https://docs.nestjs.com/support).
+---
 
-## Stay in touch
+## ⚙️ Environment Variables
 
-- Author - [Kamil Myśliwiec](https://twitter.com/kammysliwiec)
-- Website - [https://nestjs.com](https://nestjs.com/)
-- Twitter - [@nestframework](https://twitter.com/nestframework)
+Create a `.env` file in the project root:
 
-## License
+```env
+NODE_ENV=production
+PORT=3000
 
-Nest is [MIT licensed](https://github.com/nestjs/nest/blob/master/LICENSE).
+DB_HOST=postgres
+DB_PORT=5432
+DB_USERNAME=your_db_user
+DB_PASSWORD=your_db_password
+DB_DATABASE=your_db_name
+
+JWT_SECRET=your_jwt_secret
+JWT_EXPIRES_IN=2h
+
+TMDB_API_KEY=your_tmdb_api_key
+
+CLOUDINARY_CLOUD_NAME=...
+CLOUDINARY_API_KEY=...
+CLOUDINARY_API_SECRET=...
+
+MAIL_USER=...
+MAIL_PASSWORD=...
+MAIL_HOST=...
+MAIL_PORT=...
+
+MAXOTPSMS=3
+OTPNUMBERS=6
+
+🐳 Running the App
+▶ Using Docker (Recommended)
+docker-compose up --build
+
+
+Once containers are up, visit:
+
+👉 http://localhost:8080
+
+▶ Local Development
+npm install
+npm run start:dev
+
+
+Make sure PostgreSQL is running locally and .env is configured.
+
+📡 API Endpoints
+
+🎥 Movies
+Method	Endpoint	Description
+GET	/api/movies	List all movies (cached, paginated)
+GET	/api/movies/Filter	Filter by title, popularity, year, genre, sort
+GET	/api/movies/:id	Get single movie details
+POST	/api/movies	Create or update movie (Admin only)
+PUT	/api/movies/:id	Update movie (Admin only)
+
+🌐 TMDB
+Method	Endpoint	Description
+GET	/tmdb/sync?page=1	Import movies from TMDB popular list
+
+⭐ Ratings
+Method	Endpoint	Description
+POST	/api/rating/:userId/:movieId	Add/update rating
+GET	/api/rating/mo/:movieId	Get average rating & count
+GET	/api/rating/us/:userId	Get user’s ratings
+DELETE	/api/rating/:userId/:movieId	Remove rating
+
+📝 Watchlist / Favorites
+Method	Endpoint	Description
+POST	/api/movielist/:movieId	Add movie to user list
+GET	/api/movielist	Get user’s list
+DELETE	/api/movielist/:movieId	Remove from list
+
+👤 Users & Auth
+Method	Endpoint	Description
+POST	/api/users/auth/signUp	Register new user
+POST	/api/users/auth/login	Login & get JWT
+PUT	/api/users/confirmEmail	Verify email with OTP
+GET	/api/users/current-user	Get current logged-in user
+PUT	/api/users/change-password	Change password
+POST	/api/users/forgot-password	Send reset email
+POST	/api/users/reset-password	Reset password
+
+🧠 Caching
+Implemented using NestJS CacheModule with TTL = 3600s.
+Common cache keys:
+movies:all
+movie:{id}
+movies:{filters}
+popular_movies_page_{page} (TMDB)
+For production, Redis can be used as the cache store.
+
+🗄 Database Schema
+Main Entities
+User — user accounts, roles, OTP codes
+Token — active JWT tokens
+Movie — movie data, rating, genres, media links
+Rating — user–movie rating link (many-to-one)
+UserMovieList — favorites & watchlist
+
+🔐 Authentication & Security
+JWT authentication (Authorization: Bearer <token>).
+Role-based authorization (Admin & User).
+Email OTP verification for sign-up and password reset.
+Tokens stored in the database for validation and logout.
+
+🧪 Testing
+The project uses Jest for unit tests.
+npm run test
+npm run test:coverage
+✅ Coverage goal: ≥ 85% for services and controllers.
+
+🚀 Production Notes
+Disable synchronize: true in TypeORM for production → use migrations.
+Store secrets in a secure secret manager.
+Use Redis for caching in multi-instance environments.
+Add proper rate-limiting & CORS rules.
+Add centralized logging & monitoring.
+
+🔗 Project Links
+📁 GitHub Repo: https://github.com/FEKRY7/TMDB-Nest
+🐳 Docker Hub: https://hub.docker.com/r/fekry77/tmdb-nest
+
+✨ Author
+Fekry Bahaa
+GitHub: @FEKRY7
+Docker Hub: @fekry77
+
+
