@@ -8,7 +8,6 @@ import { JWTPayloadType } from 'src/untils/types';
 export class AuthGuard implements CanActivate {
   constructor(
     private readonly jwtService: JwtService,
-    // private readonly config: ConfigService,
   ) {}
 
   async canActivate(context: ExecutionContext) {
