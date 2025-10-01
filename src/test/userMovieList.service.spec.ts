@@ -4,7 +4,7 @@ import { MovieListService } from '../UserMovieList/movieList.service';
 import { UserMovieList } from '../UserMovieList/movieList.entity';
 import { Movie } from '../Movie/movie.entity';
 import { NotFoundException, ConflictException } from '@nestjs/common';
-import { ListType } from '../untils/enums'; // تأكد من مسار ListType
+import { ListType } from '../untils/enums';
 
 describe('MovieListService', () => {
   let service: MovieListService;
@@ -15,7 +15,7 @@ describe('MovieListService', () => {
     id: 1,
     name: 'Test User',
     email: 'test@example.com',
-    role: 'USER', // ضع القيمة المناسبة من enum role
+    role: 'USER', 
   };
 
   beforeEach(async () => {
@@ -50,7 +50,7 @@ describe('MovieListService', () => {
   describe('add', () => {
     it('should throw NotFoundException if movie not found', async () => {
       movieRepo.findOne.mockResolvedValue(null);
-      const dto = { type: ListType.FAVORITE }; // ✅ استخدام النوع الصحيح
+      const dto = { type: ListType.FAVORITE }; 
       await expect(service.add(payload, 1, dto)).rejects.toThrow(NotFoundException);
     });
 
